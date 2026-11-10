@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "mcp-server-demo": {
+      "command": "dotnet",
+      "args": ["run", "--project", "C:/dev/craft/dotnet-mcp-server/DemoMCP/DemoMCP.csproj"]
+    }
+  }
+}

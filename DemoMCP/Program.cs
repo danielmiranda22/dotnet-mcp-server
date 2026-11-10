@@ -1,8 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using ModelContextProtocol.Server;
-using System.ComponentModel;
+using System.Net.Http.Headers;
 
 var builder = Host.CreateApplicationBuilder(args);
 builder.Logging.AddConsole(consoleLogOptions =>
@@ -14,17 +13,14 @@ builder.Services
     .AddMcpServer()
     .WithStdioServerTransport()
     .WithToolsFromAssembly();
+
+builder.Services.AddSingleton(_ =>
+{
+    var client = new HttpClient() { BaseAddress = new Uri("https://api.weather.gov") };
+    client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("weather-tool", "1.0"));
+    return client;
+});
+
 await builder.Build().RunAsync();
 
-[McpServerToolType]
-public static class EchoTool
-{
-    [McpServerTool, Description("Echoes the message back to the client.")]
-    public static string Echo(string message) => $"hello from .NET {message}";
 
-    [McpServerTool, Description("Echos back the message in reverse.")]
-    public static string Reverse(string text) => new(string.Join("", text.Reverse()));
-
-    [McpServerTool, Description("Echoes back the length of the message.")]
-    public static int Length(string message) => message.Length;
-}
